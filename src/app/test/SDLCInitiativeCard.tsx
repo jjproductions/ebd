@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '@mui/material/styles';
+import { lighten, useTheme } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -30,27 +30,38 @@ const SDLCInitiativeCard: React.FC<SDLCInitiativeCardProps> = ({
     const theme = useTheme();
     const health = calculateHealth(initiative.scores);
     const healthStatus = getHealthStatus(health);
+    // Type-safe mapping for known palette keys
+    const paletteMap: Record<string, any> = {
+        primary: theme.palette.primary,
+        secondary: theme.palette.secondary,
+        error: theme.palette.error,
+        warning: theme.palette.warning,
+        info: theme.palette.info,
+        success: theme.palette.success,
+        grey: theme.palette.grey,
+        text: theme.palette.text,
+        background: theme.palette.background,
+    };
     // Resolve theme color key to actual color value
     let arcColor = healthStatus.color;
     if (arcColor && typeof arcColor === 'string' && arcColor.includes('.')) {
         const [paletteKey, shade] = arcColor.split('.');
-        // Type-safe mapping for known palette keys
-        const paletteMap: Record<string, any> = {
-            primary: theme.palette.primary,
-            secondary: theme.palette.secondary,
-            error: theme.palette.error,
-            warning: theme.palette.warning,
-            info: theme.palette.info,
-            success: theme.palette.success,
-            grey: theme.palette.grey,
-            text: theme.palette.text,
-            background: theme.palette.background,
-        };
         if (paletteMap[paletteKey] && paletteMap[paletteKey][shade]) {
             arcColor = paletteMap[paletteKey][shade];
         }
     }
 
+    // Helper to get lighter shade for Select background
+    const getLighterBg = (scoreColor: { bgcolor: string; color: string; borderColor: string }) => {
+        if (scoreColor.color && typeof scoreColor.color === 'string' && scoreColor.color.includes('.')) {
+            const [paletteKey] = scoreColor.color.split('.');
+            if (paletteMap[paletteKey] && (paletteMap[paletteKey] as any).light) {
+                // Use lighten to get an even lighter shade
+                return lighten((paletteMap[paletteKey] as any).light, 0.7);
+            }
+        }
+        return scoreColor.bgcolor;
+    };
     return (
         <Paper elevation={2} sx={{ mb: 3, borderRadius: 2, overflow: 'hidden' }}>
             {/* Initiative Header */}
@@ -115,6 +126,8 @@ const SDLCInitiativeCard: React.FC<SDLCInitiativeCardProps> = ({
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(5, 1fr)' }, gap: 2 }}>
                     {milestones.map((milestone, index) => {
                         const scoreColor = getScoreColor(initiative.scores[index]);
+                        const selectBg = getLighterBg(scoreColor);
+                        console.log('Rendering milestone', { scoreColor, selectBg });
                         return (
                             <Box key={index} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -128,7 +141,7 @@ const SDLCInitiativeCard: React.FC<SDLCInitiativeCardProps> = ({
                                 <Select
                                     value={initiative.scores[index]}
                                     onChange={(e) => updateScore(initiative.id, index, Number(e.target.value))}
-                                    sx={{ width: '100%', px: 1, py: 0.5, fontSize: 14, bgcolor: scoreColor.bgcolor, color: scoreColor.color, border: 1, borderColor: scoreColor.borderColor, borderRadius: 1, fontWeight: 500 }}
+                                    sx={{ width: '100%', px: 1, py: 0.5, fontSize: 14, bgcolor: selectBg, color: scoreColor.color, border: 1, borderColor: scoreColor.borderColor, borderRadius: 1, fontWeight: 550 }}
                                 >
                                     <MenuItem value={0}>0 - Not Started</MenuItem>
                                     <MenuItem value={1}>1 - In Progress</MenuItem>
@@ -149,8 +162,8 @@ const SDLCInitiativeCard: React.FC<SDLCInitiativeCardProps> = ({
                         <Box sx={{ height: 12, borderRadius: 2, bgcolor: healthStatus.color, width: `${health}%`, transition: 'width 0.5s' }} />
                     </Box>
                 </Box>
-            </Box>
-        </Paper>
+            </Box >
+        </Paper >
     );
 };
 
