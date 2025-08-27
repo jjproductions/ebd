@@ -14,6 +14,7 @@ import SDLCSearchFilter from './SDLCSearchFilter';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Initiative, SelectedHistory } from '../types';
+import Paper from '@mui/material/Paper';
 
 
 const SDLCTracker = () => {
@@ -231,12 +232,16 @@ const SDLCTracker = () => {
     }, [initiatives]);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 4 }}>
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">SDLC Milestone Tracker</h1>
-                <p className="text-gray-600">Track and self-assess your development milestones</p>
-            </div>
+            <Box sx={{ mb: 6 }}>
+                <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1 }}>
+                    SDLC Milestone Tracker
+                </Typography>
+                <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+                    Track and self-assess your development milestones
+                </Typography>
+            </Box>
 
             {/* Stats Overview */}
             <SDLCStats
@@ -255,7 +260,7 @@ const SDLCTracker = () => {
             />
 
             {/* Initiative Cards */}
-            <div className="space-y-6">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {filteredInitiatives.map((initiative) => (
                     <SDLCInitiativeCard
                         key={initiative.id}
@@ -268,7 +273,7 @@ const SDLCTracker = () => {
                         showMilestoneHistory={showMilestoneHistory}
                     />
                 ))}
-            </div>
+            </Box>
 
             {filteredInitiatives.length === 0 && (
                 <Box sx={{ textAlign: 'center', py: 12 }}>
@@ -283,111 +288,103 @@ const SDLCTracker = () => {
 
             {/* History Modal */}
             {showHistoryModal && selectedHistory && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+                <Box sx={{ position: 'fixed', inset: 0, bgcolor: 'rgba(0,0,0,0.5)', zIndex: 1300, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}>
+                    <Paper sx={{ borderRadius: 3, boxShadow: 6, maxWidth: 600, width: '100%', maxHeight: '80vh', overflow: 'hidden' }}>
                         {/* Modal Header */}
-                        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-900">Milestone History</h3>
-                                <p className="text-sm text-gray-600 mt-1">
+                        <Box sx={{ px: 4, py: 3, borderBottom: 1, borderColor: 'grey.200', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Box>
+                                <Typography variant="h6" sx={{ fontWeight: 600 }}>Milestone History</Typography>
+                                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
                                     {selectedHistory.initiative} • {selectedHistory.milestone}
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setShowHistoryModal(false)}
-                                className="text-gray-400 hover:text-gray-600"
-                            >
-                                <CloseIcon style={{ fontSize: '24px' }} />
-                            </button>
-                        </div>
+                                </Typography>
+                            </Box>
+                            <Box component="span" sx={{ color: 'text.disabled', cursor: 'pointer', '&:hover': { color: 'text.primary' } }} onClick={() => setShowHistoryModal(false)}>
+                                <CloseIcon sx={{ fontSize: 28 }} />
+                            </Box>
+                        </Box>
 
                         {/* Modal Content */}
-                        <div className="p-6 overflow-y-auto max-h-96">
+                        <Box sx={{ p: 4, overflowY: 'auto', maxHeight: 400 }}>
                             {/* Current Status */}
-                            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium text-gray-700">Current Status</span>
-                                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(selectedHistory.currentScore)}`}>
+                            <Paper elevation={0} sx={{ mb: 4, p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>Current Status</Typography>
+                                    <Box sx={{ px: 2, py: 1, borderRadius: 2, fontSize: 14, fontWeight: 500, bgcolor: getScoreColor(selectedHistory.currentScore).bgcolor, color: getScoreColor(selectedHistory.currentScore).color, border: 1, borderColor: getScoreColor(selectedHistory.currentScore).borderColor }}>
                                         {selectedHistory.currentScore} - {
                                             selectedHistory.currentScore === 0 ? "Not Started" :
                                                 selectedHistory.currentScore === 1 ? "In Progress" :
                                                     selectedHistory.currentScore === 2 ? "Nearly Complete" : "Complete"
                                         }
-                                    </span>
-                                </div>
-                            </div>
+                                    </Box>
+                                </Box>
+                            </Paper>
 
                             {/* History Timeline */}
                             {selectedHistory.history.length > 0 ? (
-                                <div className="space-y-4">
-                                    <h4 className="font-medium text-gray-900 mb-4">Change History</h4>
-                                    <div className="relative">
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Change History</Typography>
+                                    <Box sx={{ position: 'relative', pl: 6 }}>
                                         {/* Timeline line */}
-                                        <div className="absolute left-6 top-0 bottom-0 w-px bg-gray-200"></div>
+                                        <Box sx={{ position: 'absolute', left: 12, top: 0, bottom: 0, width: 2, bgcolor: 'grey.200' }} />
 
                                         {selectedHistory.history.map((entry, index) => (
-                                            <div key={index} className="relative flex items-start space-x-4 pb-6">
+                                            <Box key={index} sx={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 2, pb: 3 }}>
                                                 {/* Timeline dot */}
-                                                <div className={`relative z-10 flex items-center justify-center w-12 h-12 rounded-full border-4 border-white shadow-sm ${entry.newScore > entry.oldScore ? 'bg-green-500' :
-                                                    entry.newScore < entry.oldScore ? 'bg-red-500' : 'bg-blue-500'
-                                                    }`}>
+                                                <Box sx={{ position: 'relative', zIndex: 1, width: 48, height: 48, borderRadius: '50%', border: 2, borderColor: 'common.white', boxShadow: 2, bgcolor: entry.newScore > entry.oldScore ? 'success.main' : entry.newScore < entry.oldScore ? 'error.main' : 'info.main', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     {entry.newScore > entry.oldScore ? (
-                                                        <TrendingUpIcon style={{ fontSize: '20px' }} className="text-white" />
+                                                        <TrendingUpIcon sx={{ color: 'common.white', fontSize: 24 }} />
                                                     ) : (
-                                                        <ClockIcon style={{ fontSize: '20px' }} className="text-white" />
+                                                        <ClockIcon sx={{ color: 'common.white', fontSize: 24 }} />
                                                     )}
-                                                </div>
+                                                </Box>
 
                                                 {/* Timeline content */}
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center space-x-2 mb-1">
-                                                        <span className="text-sm font-medium text-gray-900">{entry.user}</span>
-                                                        <span className="text-sm text-gray-500">{entry.date}</span>
-                                                    </div>
+                                                <Box sx={{ flex: 1, minWidth: 0 }}>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                                                        <Typography variant="body2" sx={{ fontWeight: 500 }}>{entry.user}</Typography>
+                                                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>{entry.date}</Typography>
+                                                    </Box>
 
-                                                    <div className="flex items-center space-x-2 mb-2">
-                                                        <span className={`px-2 py-1 rounded text-xs font-medium ${getScoreColor(entry.oldScore)}`}>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                                        <Box sx={{ px: 1, py: 0.5, borderRadius: 1, fontSize: 12, fontWeight: 500, bgcolor: getScoreColor(entry.oldScore).bgcolor, color: getScoreColor(entry.oldScore).color, border: 1, borderColor: getScoreColor(entry.oldScore).borderColor }}>
                                                             {entry.oldScore}
-                                                        </span>
-                                                        <ChevronRightIcon style={{ fontSize: '16px' }} className="text-gray-400" />
-                                                        <span className={`px-2 py-1 rounded text-xs font-medium ${getScoreColor(entry.newScore)}`}>
+                                                        </Box>
+                                                        <ChevronRightIcon sx={{ color: 'text.disabled', fontSize: 18 }} />
+                                                        <Box sx={{ px: 1, py: 0.5, borderRadius: 1, fontSize: 12, fontWeight: 500, bgcolor: getScoreColor(entry.newScore).bgcolor, color: getScoreColor(entry.newScore).color, border: 1, borderColor: getScoreColor(entry.newScore).borderColor }}>
                                                             {entry.newScore}
-                                                        </span>
-                                                    </div>
+                                                        </Box>
+                                                    </Box>
 
                                                     {entry.comment && (
-                                                        <div className="flex items-start space-x-2">
-                                                            <MessageIcon style={{ fontSize: '16px' }} className="text-gray-400 mt-0.5 flex-shrink-0" />
-                                                            <p className="text-sm text-gray-600">{entry.comment}</p>
-                                                        </div>
+                                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mt: 0.5 }}>
+                                                            <MessageIcon sx={{ color: 'text.disabled', fontSize: 18, mt: 0.5, flexShrink: 0 }} />
+                                                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>{entry.comment}</Typography>
+                                                        </Box>
                                                     )}
-                                                </div>
-                                            </div>
+                                                </Box>
+                                            </Box>
                                         ))}
-                                    </div>
-                                </div>
+                                    </Box>
+                                </Box>
                             ) : (
-                                <div className="text-center py-8">
-                                    <ClockIcon style={{ fontSize: '48px' }} className="text-gray-300 mx-auto mb-3" />
-                                    <p className="text-gray-500">No change history available</p>
-                                    <p className="text-sm text-gray-400 mt-1">Updates will appear here as changes are made</p>
-                                </div>
+                                <Box sx={{ textAlign: 'center', py: 6 }}>
+                                    <ClockIcon sx={{ color: 'grey.300', fontSize: 48, mb: 2 }} />
+                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>No change history available</Typography>
+                                    <Typography variant="caption" sx={{ color: 'text.disabled', mt: 1 }}>Updates will appear here as changes are made</Typography>
+                                </Box>
                             )}
-                        </div>
+                        </Box>
 
                         {/* Modal Footer */}
-                        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-                            <button
-                                onClick={() => setShowHistoryModal(false)}
-                                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-                            >
+                        <Box sx={{ px: 4, py: 3, borderTop: 1, borderColor: 'grey.200', bgcolor: 'background.default', textAlign: 'right' }}>
+                            <Box component="button" onClick={() => setShowHistoryModal(false)} sx={{ px: 3, py: 1, bgcolor: 'grey.700', color: 'common.white', borderRadius: 2, fontWeight: 500, cursor: 'pointer', '&:hover': { bgcolor: 'grey.800' } }}>
                                 Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                            </Box>
+                        </Box>
+                    </Paper>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };
 

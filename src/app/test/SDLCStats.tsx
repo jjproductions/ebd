@@ -3,8 +3,7 @@ import { TrendingUp as TrendingUpIcon } from '@mui/icons-material';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-import { TrendingUpTimelineIcon } from '../../../public/icons';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -15,10 +14,6 @@ const Item = styled(Paper)(({ theme }) => ({
     lineHeight: '60px',
 }));
 
-const darkTheme = createTheme({ palette: { mode: 'dark' } });
-const lightTheme = createTheme({ palette: { mode: 'light' } });
-
-
 interface SDLCStatsProps {
     totalInitiatives: number;
     avgHealth: number;
@@ -28,76 +23,69 @@ interface SDLCStatsProps {
 
 const SDLCStats: React.FC<SDLCStatsProps> = ({ totalInitiatives, avgHealth, atRiskCount, getHealthStatus }) => {
     // console.log('Rendering SDLCStats', {
-    //     totalInitiatives,
-    //     avgHealth,
-    //     atRiskCount,
-    //     healthStatus: JSON.stringify(getHealthStatus(avgHealth))
-    // });
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={6}>
-                <ThemeProvider theme={darkTheme}>
-                    <Box
+                <Box
+                    sx={{
+                        p: 2,
+                        borderRadius: 2,
+                        bgcolor: 'background.default',
+                        display: 'grid',
+                        width: 1000,
+                        gap: 2,
+                    }}
+                >
+                    <Paper
+                        elevation={5}
                         sx={{
                             p: 2,
-                            borderRadius: 2,
-                            bgcolor: 'background.default',
-                            display: 'grid',
-                            // gridTemplateColumns: { md: '1fr' },
-                            width: 1000,
-                            gap: 2,
+                            bgcolor: 'background.paper',
+                            color: 'text.primary',
                         }}
                     >
-                        <Paper
-                            elevation={5}
+                        <Typography variant="subtitle2">Total Initiatives</Typography>
+                        <Typography variant="h1">
+                            <TrendingUpIcon sx={{
+                                float: 'right',
+                                fontSize: '3rem',
+                                mt: -1
+                            }} />
+                        </Typography>
+                        <Typography variant="h3" sx={{ fontWeight: 'bold' }}>{totalInitiatives}</Typography>
+                    </Paper><br />
+                    <Paper elevation={5} sx={{ p: 2, bgcolor: 'background.paper', color: 'text.primary' }}>
+                        <Typography variant="subtitle2">Average Health</Typography>
+                        <Box
                             sx={{
-                                p: 2,
-                                bgcolor: 'white',
-                                color: 'primary.contrastText',
+                                width: 16,
+                                height: 16,
+                                borderRadius: '50%',
+                                bgcolor: getHealthStatus(avgHealth).color,
+                                display: 'inline-block',
+                                mt: 1,
+                                float: 'right'
                             }}
-                        >
-                            <Typography variant="subtitle2">Total Initiatives</Typography>
-                            <Typography variant="h1">
-                                <TrendingUpIcon sx={{
-                                    float: 'right',
-                                    fontSize: '3rem',
-                                    mt: -1
-                                }} />
-                            </Typography>
-                            <Typography variant="h3" sx={{ fontWeight: 'bold' }}>{totalInitiatives}</Typography>
-                        </Paper><br />
-                        <Paper elevation={5} sx={{ p: 2, bgcolor: 'white', color: 'primary.contrastText' }}>
-                            <Typography variant="subtitle2">Average Health</Typography>
-                            <Typography variant="h3" sx={{ fontWeight: 'bold' }}>{avgHealth}%</Typography>
-                            <Box
-                                sx={{
-                                    width: 16,
-                                    height: 16,
-                                    borderRadius: '50%',
-                                    bgcolor: getHealthStatus(avgHealth).color,
-                                    display: 'inline-block',
-                                    mt: 1,
-                                }}
-                            />
-                        </Paper><br />
-                        <Paper elevation={5} sx={{ p: 2, bgcolor: 'white', color: 'primary.contrastText' }}>
-                            <Typography variant="subtitle2">At Risk</Typography>
-                            <Box
-                                sx={{
-                                    width: 16,
-                                    height: 16,
-                                    borderRadius: '50%',
-                                    bgcolor: 'error.main',
-                                    display: 'inline-block',
-                                    mt: 1,
-                                    float: 'right',
-                                }}
-                            />
-                            <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'error.main' }}>{atRiskCount}</Typography>
-                        </Paper>
+                        />
+                        <Typography variant="h3" sx={{ fontWeight: 'bold' }}>{avgHealth}%</Typography>
+                    </Paper><br />
+                    <Paper elevation={5} sx={{ p: 2, bgcolor: 'background.paper', color: 'text.primary' }}>
+                        <Typography variant="subtitle2">At Risk</Typography>
+                        <Box
+                            sx={{
+                                width: 16,
+                                height: 16,
+                                borderRadius: '50%',
+                                bgcolor: 'error.main',
+                                display: 'inline-block',
+                                mt: 1,
+                                float: 'right',
+                            }}
+                        />
+                        <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'error.main' }}>{atRiskCount}</Typography>
+                    </Paper>
 
-                    </Box>
-                </ThemeProvider>
+                </Box>
             </Grid>
         </Box>
     );
