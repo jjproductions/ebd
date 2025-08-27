@@ -49,7 +49,8 @@ const SDLCStats: React.FC<SDLCStatsProps> = ({ totalInitiatives, avgHealth, atRi
                             <TrendingUpIcon sx={{
                                 float: 'right',
                                 fontSize: '3rem',
-                                mt: -1
+                                mt: -1,
+                                color: 'info.main'
                             }} />
                         </Typography>
                         <Typography variant="h3" sx={{ fontWeight: 'bold' }}>{totalInitiatives}</Typography>

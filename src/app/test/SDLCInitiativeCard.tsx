@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -26,8 +27,29 @@ const SDLCInitiativeCard: React.FC<SDLCInitiativeCardProps> = ({
     updateScore,
     showMilestoneHistory
 }) => {
+    const theme = useTheme();
     const health = calculateHealth(initiative.scores);
     const healthStatus = getHealthStatus(health);
+    // Resolve theme color key to actual color value
+    let arcColor = healthStatus.color;
+    if (arcColor && typeof arcColor === 'string' && arcColor.includes('.')) {
+        const [paletteKey, shade] = arcColor.split('.');
+        // Type-safe mapping for known palette keys
+        const paletteMap: Record<string, any> = {
+            primary: theme.palette.primary,
+            secondary: theme.palette.secondary,
+            error: theme.palette.error,
+            warning: theme.palette.warning,
+            info: theme.palette.info,
+            success: theme.palette.success,
+            grey: theme.palette.grey,
+            text: theme.palette.text,
+            background: theme.palette.background,
+        };
+        if (paletteMap[paletteKey] && paletteMap[paletteKey][shade]) {
+            arcColor = paletteMap[paletteKey][shade];
+        }
+    }
 
     return (
         <Paper elevation={2} sx={{ mb: 3, borderRadius: 2, overflow: 'hidden' }}>
@@ -53,21 +75,34 @@ const SDLCInitiativeCard: React.FC<SDLCInitiativeCardProps> = ({
                             <Typography variant="body2" sx={{ color: healthStatus.color }}>{healthStatus.label}</Typography>
                         </Box>
                         <Box sx={{ width: 64, height: 64, position: 'relative' }}>
-                            <svg width={64} height={64} style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
-                                <path
-                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                    fill="none"
-                                    stroke="#E5E7EB"
-                                    strokeWidth="2"
-                                />
-                                <path
-                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                    fill="none"
-                                    stroke={healthStatus.color}
-                                    strokeWidth="2"
-                                    strokeDasharray={`${health}, 100`}
-                                />
-                            </svg>
+                            {(() => {
+                                const radius = 15.9155;
+                                const circumference = 2 * Math.PI * radius;
+                                // Avoid invisible arc at 0%
+                                const progress = Math.max(health, 0.01);
+                                const offset = circumference * (1 - progress / 100);
+                                // console.log('Rendering SDLCInitiativeCard', { health, progress, offset, circumference, radius, healthStatus });
+                                return (
+                                    <svg width={64} height={64} style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
+                                        <path
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none"
+                                            stroke="#E5E7EB"
+                                            strokeWidth="2"
+                                        />
+                                        <path
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none"
+                                            stroke={arcColor}
+                                            strokeWidth="2"
+                                            strokeDasharray={circumference}
+                                            strokeDashoffset={offset}
+                                            strokeLinecap="round"
+                                            style={{ transition: 'stroke-dashoffset 0.5s' }}
+                                        />
+                                    </svg>
+                                );
+                            })()}
                             <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>{health}%</Typography>
                             </Box>
